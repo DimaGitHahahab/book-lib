@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class BookDTO {
@@ -19,6 +20,7 @@ public class BookDTO {
     @Getter
     @Setter
     @ToString
+    @Builder
     @RequiredArgsConstructor
     @AllArgsConstructor
     public static class AuthorDTO {

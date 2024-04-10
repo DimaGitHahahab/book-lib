@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,11 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public void addBook(Book book) {
+    public Book getBook(Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new BookDoesNotExistException("Book with such ID does not exist."));
+    }
+
+    public Book addBook(Book book) {
         if (bookRepository.existsByIsbn(book.getIsbn())) {
             throw new BookAlreadyExistsException("Book with the same ISBN already exists.");
         }
@@ -35,6 +38,8 @@ public class BookService {
         }
 
         bookRepository.save(book);
+
+        return book;
     }
 
     public void delete(Long id) {
@@ -45,7 +50,7 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public void alterBook(Book book) {
+    public Book alterBook(Book book) {
         if (!bookRepository.existsById(book.getId())) {
             throw new BookDoesNotExistException("Book with such ID does not exist.");
         }
@@ -54,30 +59,35 @@ public class BookService {
         }
 
         bookRepository.save(book);
+
+        return book;
     }
 
-    public void updateBook(Long id, Map<String, Object> updates) {
+    public Book updateBook(Long id, Map<String, Object> updates) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new BookDoesNotExistException("Book with such ID does not exist."));
 
-        if (updates.containsKey("title")) {
-            book.setTitle((String) updates.get("title"));
-        }
-        if (updates.containsKey("isbn")) {
-            book.setIsbn((String) updates.get("isbn"));
-        }
-        if (updates.containsKey("publishedDate")) {
-            book.setPublishedDate((LocalDate) updates.get("publishedDate"));
-        }
-        if (updates.containsKey("author")) {
-            Long authorId = (Long) updates.get("author");
-            if (!authorRepository.existsById(authorId)) {
-                throw new AuthorDoesNotExistException("Author with such an ID does not exist.");
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "title":
+                    book.setTitle((String) value);
+                    break;
+                case "isbn":
+                    book.setIsbn((String) value);
+                    break;
+                case "publicationDate":
+                    book.setPublishedDate((LocalDate) value);
+                    break;
+                case "author":
+                    Author author = authorRepository.findById((Long) value).orElseThrow(() -> new AuthorDoesNotExistException("Author with such ID does not exist."));
+                    book.setAuthor(author);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid field to modify: " + key);
             }
-
-            Optional<Author> author = authorRepository.findById(authorId);
-            author.ifPresent(book::setAuthor);
-        }
+        });
 
         bookRepository.save(book);
+
+        return book;
     }
 }

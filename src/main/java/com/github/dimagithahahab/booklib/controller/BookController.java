@@ -1,9 +1,9 @@
 package com.github.dimagithahahab.booklib.controller;
 
 import com.github.dimagithahahab.booklib.dto.BookDTO;
-import com.github.dimagithahahab.booklib.model.author.Author;
 import com.github.dimagithahahab.booklib.model.book.Book;
 import com.github.dimagithahahab.booklib.service.BookService;
+import com.github.dimagithahahab.booklib.util.DTOConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,79 +13,61 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.github.dimagithahahab.booklib.util.DTOConverter.convertToEntity;
+
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "lib/books")
+@RequestMapping(path = "api/v1/lib/books")
 public class BookController {
     private final BookService bookService;
-
-    private BookDTO convertToDTO(Book book) {
-        BookDTO bookDTO = new BookDTO();
-        bookDTO.setId(book.getId());
-        bookDTO.setTitle(book.getTitle());
-        bookDTO.setIsbn(book.getIsbn());
-        bookDTO.setPublishedDate(book.getPublishedDate());
-
-        BookDTO.AuthorDTO authorDTO = new BookDTO.AuthorDTO();
-        authorDTO.setId(book.getAuthor().getId());
-        authorDTO.setName(book.getAuthor().getFirstName() + " " + book.getAuthor().getLastName());
-
-        bookDTO.setAuthor(authorDTO);
-
-        return bookDTO;
-    }
-
-    private Book convertToEntity(BookDTO bookDTO) {
-        Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setPublishedDate(bookDTO.getPublishedDate());
-
-        BookDTO.AuthorDTO authorDTO = bookDTO.getAuthor();
-        Author author = new Author();
-        author.setId(authorDTO.getId());
-        book.setAuthor(author);
-
-        return book;
-    }
-
 
     @GetMapping
     public List<BookDTO> getAllBooks() {
         List<Book> books = bookService.getBooks();
-        return books.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return books.stream().map(DTOConverter::convertToDTO).collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "{id}")
+    public BookDTO getBook(@PathVariable("id") Long id) {
+        Book book = bookService.getBook(id);
+        return DTOConverter.convertToDTO(book);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) {
         Book book = convertToEntity(bookDTO);
 
-        bookService.addBook(book);
+        Book savedBook = bookService.addBook(book);
+        BookDTO savedBookDTO = DTOConverter.convertToDTO(savedBook);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBookDTO);
     }
 
     @DeleteMapping(path = "{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<Void> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) {
+    public ResponseEntity<BookDTO> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) {
         Book book = convertToEntity(bookDTO);
         book.setId(id);
 
-        bookService.alterBook(book);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        Book savedBook = bookService.alterBook(book);
+        BookDTO savedBookDTO = DTOConverter.convertToDTO(savedBook);
+
+        return ResponseEntity.status(HttpStatus.OK).body(savedBookDTO);
     }
 
     @PatchMapping(path = "{id}")
-    public ResponseEntity<Void> patchBook(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
-        bookService.updateBook(id, updates);
+    public ResponseEntity<BookDTO> patchBook(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
+        Book savedBook = bookService.updateBook(id, updates);
+        BookDTO savedBookDTO = DTOConverter.convertToDTO(savedBook);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(savedBookDTO);
     }
 
 

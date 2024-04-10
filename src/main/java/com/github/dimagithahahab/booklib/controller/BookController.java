@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -63,4 +64,29 @@ public class BookController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
+        bookService.delete(id);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PutMapping(path = "{id}")
+    public ResponseEntity<Void> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) {
+        Book book = convertToEntity(bookDTO);
+        book.setId(id);
+
+        bookService.alterBook(book);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PatchMapping(path = "{id}")
+    public ResponseEntity<Void> patchBook(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
+        bookService.updateBook(id, updates);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
 }

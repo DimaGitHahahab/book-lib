@@ -5,6 +5,9 @@ import com.github.dimagithahahab.booklib.exception.UserAlreadyExistsException;
 import com.github.dimagithahahab.booklib.model.user.User;
 import com.github.dimagithahahab.booklib.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +51,12 @@ public class AuthService {
         }
 
         throw new InvalidLoginException("Invalid email or password");
+    }
+
+    @Bean
+    public UserDetailsService provideUser() {
+        return username -> repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with such email not found."));
     }
 }
 

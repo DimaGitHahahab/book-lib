@@ -1,6 +1,8 @@
 package com.github.dimagithahahab.booklib.service.auth;
 
+import com.github.dimagithahahab.booklib.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +23,11 @@ public class JwtManage {
     private String SECRET_KEY;
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (InvalidTokenException e) {
+            return null;
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -48,6 +54,8 @@ public class JwtManage {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
+        if (username == null) return false;
+
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
@@ -60,12 +68,16 @@ public class JwtManage {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parser()
-                .verifyWith(getSignInKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts
+                    .parser()
+                    .verifyWith(getSignInKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new InvalidTokenException("Invalid token");
+        }
     }
 
     private SecretKey getSignInKey() {

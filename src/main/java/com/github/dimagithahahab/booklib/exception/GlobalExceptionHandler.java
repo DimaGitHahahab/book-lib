@@ -3,6 +3,7 @@ package com.github.dimagithahahab.booklib.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,9 +46,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("Email is already taken.", HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        return new ResponseEntity<>("User with such email not found.", HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

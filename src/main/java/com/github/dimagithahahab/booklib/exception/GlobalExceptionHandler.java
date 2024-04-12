@@ -35,6 +35,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>("The requested method is not supported.", HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler(InvalidLoginException.class)
+    public ResponseEntity<String> handleInvalidLoginException(InvalidLoginException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+        return new ResponseEntity<>("Email is already taken.", HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

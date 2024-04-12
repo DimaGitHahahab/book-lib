@@ -1,4 +1,4 @@
-package com.github.dimagithahahab.booklib.service;
+package com.github.dimagithahahab.booklib.service.book;
 
 import com.github.dimagithahahab.booklib.exception.AuthorDoesNotExistException;
 import com.github.dimagithahahab.booklib.exception.BookAlreadyExistsException;

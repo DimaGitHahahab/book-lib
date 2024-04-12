@@ -2,8 +2,11 @@ package com.github.dimagithahahab.booklib.util;
 
 import com.github.dimagithahahab.booklib.dto.AuthorDTO;
 import com.github.dimagithahahab.booklib.dto.BookDTO;
+import com.github.dimagithahahab.booklib.dto.UserDTO;
 import com.github.dimagithahahab.booklib.model.author.Author;
 import com.github.dimagithahahab.booklib.model.book.Book;
+import com.github.dimagithahahab.booklib.model.user.Role;
+import com.github.dimagithahahab.booklib.model.user.User;
 
 import java.util.stream.Collectors;
 
@@ -70,5 +73,22 @@ public class DTOConverter {
         }
 
         return author;
+    }
+
+    public static User convertToEntity(UserDTO loggingUserDTO) {
+        return User.builder()
+                .name(loggingUserDTO.getName())
+                .email(loggingUserDTO.getEmail())
+                .password(loggingUserDTO.getPassword())
+                .role(Role.USER)
+                .build();
+    }
+
+    public static UserDTO convertToDTO(User user) {
+        return UserDTO.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+//                .password(user.getPassword())
+                .build();
     }
 }

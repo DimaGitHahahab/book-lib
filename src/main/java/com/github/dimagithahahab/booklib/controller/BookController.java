@@ -2,7 +2,7 @@ package com.github.dimagithahahab.booklib.controller;
 
 import com.github.dimagithahahab.booklib.dto.BookDTO;
 import com.github.dimagithahahab.booklib.model.book.Book;
-import com.github.dimagithahahab.booklib.service.BookService;
+import com.github.dimagithahahab.booklib.service.book.BookService;
 import com.github.dimagithahahab.booklib.util.DTOConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

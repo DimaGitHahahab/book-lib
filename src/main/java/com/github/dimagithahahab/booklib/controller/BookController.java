@@ -4,6 +4,7 @@ import com.github.dimagithahahab.booklib.dto.BookDTO;
 import com.github.dimagithahahab.booklib.model.book.Book;
 import com.github.dimagithahahab.booklib.service.book.BookService;
 import com.github.dimagithahahab.booklib.util.DTOConverter;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +24,24 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
+    @Operation(summary = "List all the books", tags = {"book"})
+    @ResponseStatus(HttpStatus.OK)
     public List<BookDTO> getAllBooks() {
         List<Book> books = bookService.getBooks();
         return books.stream().map(DTOConverter::convertToDTO).collect(Collectors.toList());
     }
 
     @GetMapping(path = "{id}")
+    @Operation(summary = "Get a book by its id", tags = {"book"})
+    @ResponseStatus(HttpStatus.OK)
     public BookDTO getBook(@PathVariable("id") Long id) {
         Book book = bookService.getBook(id);
         return DTOConverter.convertToDTO(book);
     }
 
     @PostMapping
+    @Operation(summary = "Add a new book", tags = {"book"})
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) {
         Book book = convertToEntity(bookDTO);
 
@@ -45,6 +52,8 @@ public class BookController {
     }
 
     @DeleteMapping(path = "{id}")
+    @Operation(summary = "Delete a book by its id", tags = {"book"})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteBook(@PathVariable("id") Long id) {
         bookService.delete(id);
 
@@ -52,6 +61,8 @@ public class BookController {
     }
 
     @PutMapping(path = "{id}")
+    @Operation(summary = "Update a book by its id", tags = {"book"})
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<BookDTO> updateBook(@PathVariable("id") Long id, @RequestBody BookDTO bookDTO) {
         Book book = convertToEntity(bookDTO);
         book.setId(id);
@@ -63,6 +74,8 @@ public class BookController {
     }
 
     @PatchMapping(path = "{id}")
+    @Operation(summary = "Update a book by its id", tags = {"book"})
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<BookDTO> patchBook(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         Book savedBook = bookService.updateBook(id, updates);
         BookDTO savedBookDTO = DTOConverter.convertToDTO(savedBook);

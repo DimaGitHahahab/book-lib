@@ -7,14 +7,17 @@ import com.github.dimagithahahab.booklib.util.DTOConverter;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Validated
 public class UserAuthController {
     private final AuthService authService;
 
@@ -29,7 +32,7 @@ public class UserAuthController {
     @PostMapping("/signup")
     @Operation(summary = "Register a new user", tags = {"auth"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO newUserDTO) {
+    public ResponseEntity<String> registerUser(@Valid  @RequestBody UserDTO newUserDTO) {
         User newUser = DTOConverter.convertToEntity(newUserDTO);
 
         authService.register(newUser);
@@ -40,7 +43,7 @@ public class UserAuthController {
     @PostMapping("/login")
     @Operation(summary = "Login a user", tags = {"auth"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> loginUser(@RequestBody UserDTO loggingUserDTO, HttpServletResponse response) {
+    public ResponseEntity<String> loginUser(@Valid @RequestBody UserDTO loggingUserDTO, HttpServletResponse response) {
         User loggingUser = DTOConverter.convertToEntity(loggingUserDTO);
 
         String token = authService.login(loggingUser);

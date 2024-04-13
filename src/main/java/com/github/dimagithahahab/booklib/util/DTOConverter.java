@@ -88,7 +88,6 @@ public class DTOConverter {
         return UserDTO.builder()
                 .name(user.getName())
                 .email(user.getEmail())
-//                .password(user.getPassword())
                 .build();
     }
 }

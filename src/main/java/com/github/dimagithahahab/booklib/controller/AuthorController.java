@@ -5,9 +5,11 @@ import com.github.dimagithahahab.booklib.model.author.Author;
 import com.github.dimagithahahab.booklib.service.author.AuthorService;
 import com.github.dimagithahahab.booklib.util.DTOConverter;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import static com.github.dimagithahahab.booklib.util.DTOConverter.convertToEntit
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/lib/authors")
+@Validated
 public class AuthorController {
     private final AuthorService authorService;
 
@@ -41,7 +44,7 @@ public class AuthorController {
     @PostMapping
     @Operation(summary = "Add a new author", tags = {"author"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<AuthorDTO> addActor(@RequestBody AuthorDTO authorDTO) {
+    public ResponseEntity<AuthorDTO> addActor(@Valid @RequestBody AuthorDTO authorDTO) {
         Author author = convertToEntity(authorDTO);
 
         Author savedAuthor = authorService.addAuthor(author);
@@ -62,7 +65,7 @@ public class AuthorController {
     @PutMapping("{id}")
     @Operation(summary = "Update an author by its id", tags = {"author"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<AuthorDTO> updateBook(@PathVariable("id") Long id, @RequestBody AuthorDTO authorDTO) {
+    public ResponseEntity<AuthorDTO> updateBook(@PathVariable("id") Long id, @Valid @RequestBody AuthorDTO authorDTO) {
         Author author = convertToEntity(authorDTO);
         author.setId(id);
 
@@ -75,7 +78,7 @@ public class AuthorController {
     @PatchMapping("{id}")
     @Operation(summary = "Update an author by its id", tags = {"author"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<AuthorDTO> patchBook(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<AuthorDTO> patchBook(@PathVariable("id") Long id, @Valid @RequestBody Map<String, Object> updates) {
         Author savedAuthor = authorService.updateAuthor(id, updates);
         AuthorDTO savedAuthorDTO = DTOConverter.convertToDTO(savedAuthor);
 

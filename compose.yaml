@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   postgres:
     image: 'postgres:latest'
@@ -6,4 +7,19 @@ services:
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5432'
+      - '5432:5432'
+    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - '8080:8080'
+    volumes:
+      - postgresVolume:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgresVolume:
